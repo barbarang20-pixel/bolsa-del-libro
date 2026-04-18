@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolsa del Libro · EIE UCV</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0f1e3d;--blue:#1a3a6b;--mid:#2563eb;--accent:#e8b84b;
+  --light:#f0f4ff;--border:#dce4f5;--text:#1a1a2e;--muted:#6b7a99;
+  --green:#16a34a;--red:#dc2626;--amber:#d97706;
+  --ff:'Plus Jakarta Sans',sans-serif;--fd:'Playfair Display',serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--ff);background:#f8f9fc;color:var(--text);min-height:100vh;}
+
+header{
+  background:var(--navy);padding:0 2rem;
+  display:flex;align-items:center;justify-content:space-between;height:62px;
+  position:sticky;top:0;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:12px;}
+.logo-mark{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--accent);display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:18px;font-weight:700;color:var(--navy);
+}
+.logo-text{font-family:var(--fd);font-size:17px;color:#fff;font-weight:500;}
+.logo-text span{color:var(--accent);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-tag{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;color:rgba(255,255,255,0.5);}
+.status-dot{
+  display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;
+  font-size:11px;font-weight:500;transition:all .3s;
+}
+.status-ok{background:rgba(22,163,74,0.15);border:1px solid rgba(22,163,74,0.3);color:#4ade80;}
+.status-ok::before{content:'';width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;}
+.status-err{background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);color:#f87171;}
+.status-err::before{content:'';width:6px;height:6px;border-radius:50%;background:#f87171;display:inline-block;}
+.status-loading{background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;}
+.status-loading::before{content:'';width:6px;height:6px;border-radius:50%;background:#fbbf24;display:inline-block;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.hero{
+  background:var(--navy);padding:56px 2rem 64px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:700px;height:400px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(37,99,235,0.25) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-kicker{
+  display:inline-block;padding:5px 16px;border-radius:20px;
+  border:1px solid rgba(232,184,75,0.3);background:rgba(232,184,75,0.08);
+  font-size:11px;font-weight:600;color:var(--accent);
+  letter-spacing:0.08em;text-transform:uppercase;margin-bottom:22px;
+}
+.hero h1{font-family:var(--fd);font-size:42px;font-weight:700;color:#fff;line-height:1.1;margin-bottom:14px;}
+.hero h1 em{font-style:normal;color:var(--accent);}
+.hero p{font-size:15px;color:rgba(255,255,255,0.55);max-width:480px;margin:0 auto 36px;line-height:1.7;}
+.search-wrap{max-width:560px;margin:0 auto;position:relative;}
+.search-box{
+  display:flex;background:#fff;border-radius:14px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.25);overflow:hidden;
+  border:2px solid rgba(232,184,75,0.2);transition:border-color .2s;
+}
+.search-box:focus-within{border-color:var(--accent);}
+.search-icon{display:flex;align-items:center;padding:0 16px;color:var(--muted);background:#fff;flex-shrink:0;}
+#mainSearch{
+  flex:1;padding:16px 8px;font-size:15px;font-family:var(--ff);
+  border:none;outline:none;color:var(--text);background:#fff;
+}
+#mainSearch::placeholder{color:#b0bad4;}
+.search-btn{
+  padding:14px 24px;background:var(--mid);color:#fff;border:none;cursor:pointer;
+  font-size:14px;font-weight:600;font-family:var(--ff);transition:background .15s;
+}
+.search-btn:hover{background:#1d4ed8;}
+.search-hints{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.hint{
+  padding:5px 12px;border-radius:20px;font-size:12px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s;
+}
+.hint:hover{background:rgba(255,255,255,0.15);color:#fff;}
+
+/* SKELETON LOADER */
+.skeleton{
+  background:linear-gradient(90deg,#e8edf5 25%,#f5f7fa 50%,#e8edf5 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-card{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;padding:20px;}
+.sk-line{height:12px;margin-bottom:10px;}
+.sk-line.wide{width:80%;}
+.sk-line.mid{width:55%;}
+.sk-line.short{width:35%;}
+.sk-btn{height:36px;margin-top:14px;border-radius:8px;}
+
+.results-section{max-width:900px;margin:0 auto;padding:32px 2rem;display:none;}
+.results-section.visible{display:block;}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.results-title{font-size:14px;color:var(--muted);}
+.results-title strong{color:var(--text);}
+.clear-btn{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--ff);text-decoration:underline;}
+.clear-btn:hover{color:var(--text);}
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+
+.book-card{background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.book-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(15,30,61,0.1);}
+.book-spine{height:6px;}
+.book-body{padding:20px;}
+.book-category{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--mid);margin-bottom:8px;}
+.book-title{font-family:var(--fd);font-size:16px;font-weight:500;color:var(--navy);line-height:1.3;margin-bottom:4px;}
+.book-author{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.book-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);}
+.avail-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;}
+.avail-badge::before{content:'';width:7px;height:7px;border-radius:50%;}
+.badge-ok{background:#f0fdf4;color:var(--green);}
+.badge-ok::before{background:var(--green);}
+.badge-low{background:#fffbeb;color:var(--amber);}
+.badge-low::before{background:var(--amber);}
+.badge-no{background:#fef2f2;color:var(--red);}
+.badge-no::before{background:var(--red);}
+.qr-tag{font-size:11px;color:#b0bad4;font-family:monospace;}
+.request-btn{margin-top:14px;width:100%;padding:9px;border-radius:8px;font-size:13px;font-weight:600;font-family:var(--ff);cursor:pointer;border:none;transition:all .15s;}
+.req-ok{background:var(--navy);color:#fff;}
+.req-ok:hover{background:var(--blue);}
+.req-low{background:#fffbeb;color:var(--amber);border:1px solid #fcd34d;}
+.req-low:hover{background:#fef3c7;}
+.req-no{background:#f8f9fc;color:var(--muted);cursor:not-allowed;border:1px solid var(--border);}
+
+.empty-state{text-align:center;padding:48px 20px;display:none;}
+.empty-state.visible{display:block;}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty-state h3{font-family:var(--fd);font-size:20px;color:var(--navy);margin-bottom:8px;}
+.empty-state p{font-size:14px;color:var(--muted);}
+
+/* ERROR DE CONEXIÓN */
+.api-error{
+  max-width:600px;margin:32px auto;padding:0 2rem;text-align:center;display:none;
+}
+.api-error.visible{display:block;}
+.error-box{
+  background:#fff;border:1px solid #fecaca;border-radius:14px;padding:32px;
+}
+.error-icon{font-size:40px;margin-bottom:12px;}
+.error-box h3{font-family:var(--fd);font-size:18px;color:var(--red);margin-bottom:8px;}
+.error-box p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
+.error-box code{
+  display:block;background:#f8f9fc;border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:var(--navy);
+  margin-bottom:16px;text-align:left;word-break:break-all;
+}
+.retry-btn{
+  padding:9px 24px;border-radius:8px;background:var(--mid);color:#fff;
+  border:none;font-size:13px;font-weight:600;font-family:var(--ff);cursor:pointer;
+}
+.retry-btn:hover{background:#1d4ed8;}
+
+.catalog-section{max-width:900px;margin:0 auto;padding:0 2rem 48px;}
+.section-label{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.section-label h2{font-family:var(--fd);font-size:22px;color:var(--navy);font-weight:500;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.modal-bg{
+  position:fixed;inset:0;background:rgba(15,30,61,0.6);
+  display:none;align-items:center;justify-content:center;z-index:200;
+  backdrop-filter:blur(4px);
+}
+.modal-bg.open{display:flex;}
+.modal{
+  background:#fff;border-radius:18px;padding:32px;
+  max-width:440px;width:90%;position:relative;
+  animation:popIn .2s ease;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.modal-close{
+  position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;
+  background:var(--light);border:none;cursor:pointer;font-size:18px;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.modal-close:hover{background:var(--border);}
+.modal-tag{font-size:11px;font-weight:600;color:var(--mid);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;}
+.modal-title{font-family:var(--fd);font-size:22px;color:var(--navy);margin-bottom:4px;line-height:1.2;}
+.modal-author{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.modal-divider{height:1px;background:var(--border);margin:16px 0;}
+.modal-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.modal-key{font-size:12px;color:var(--muted);}
+.modal-val{font-size:13px;font-weight:600;color:var(--navy);}
+.modal-form input{
+  width:100%;padding:10px 14px;border-radius:8px;border:1.5px solid var(--border);
+  font-size:13px;font-family:var(--ff);outline:none;color:var(--text);
+  margin-bottom:10px;transition:border .15s;
+}
+.modal-form input:focus{border-color:var(--mid);}
+.modal-submit{
+  width:100%;padding:12px;border-radius:10px;background:var(--navy);color:#fff;
+  border:none;font-size:14px;font-weight:600;font-family:var(--ff);
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.modal-submit:hover{background:var(--blue);}
+.modal-submit:disabled{background:#94a3b8;cursor:not-allowed;}
+.modal-success{text-align:center;padding:8px 0;display:none;}
+.modal-success.show{display:block;}
+.success-check{width:56px;height:56px;border-radius:50%;background:#f0fdf4;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;}
+.modal-success h3{font-family:var(--fd);font-size:18px;color:var(--navy);margin-bottom:6px;}
+.modal-success p{font-size:13px;color:var(--muted);line-height:1.6;}
+
+footer{background:var(--navy);padding:24px 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.06);}
+footer p{font-size:12px;color:rgba(255,255,255,0.3);}
+footer span{color:var(--accent);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">B</div>
+    <span class="logo-text">Bolsa del <span>Libro</span> · EIE UCV</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-tag">Escuela de Ingeniería Eléctrica</span>
+    <div class="status-dot status-loading" id="statusDot">Conectando...</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-kicker">Universidad Central de Venezuela</div>
+  <h1>Encuentra tu libro<br>antes de ir a la <em>biblioteca</em></h1>
+  <p>Consulta en tiempo real qué libros están disponibles en la Bolsa del Libro. Sin filas, sin incertidumbre.</p>
+  <div class="search-wrap">
+    <div class="search-box">
+      <div class="search-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </div>
+      <input id="mainSearch" type="text" placeholder="Buscar por título, autor o materia..." oninput="filtrar(this.value)">
+      <button class="search-btn" onclick="filtrar(document.getElementById('mainSearch').value)">Buscar</button>
+    </div>
+    <div class="search-hints">
+      <span class="hint" onclick="setSearch('Circuitos')">Circuitos Eléctricos</span>
+      <span class="hint" onclick="setSearch('Señales')">Señales y Sistemas</span>
+      <span class="hint" onclick="setSearch('Electrónica')">Electrónica</span>
+      <span class="hint" onclick="setSearch('Haykin')">Haykin</span>
+      <span class="hint" onclick="setSearch('Kreyszig')">Kreyszig</span>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR DE API -->
+<div class="api-error" id="apiError">
+  <div class="error-box">
+    <div class="error-icon">⚠️</div>
+    <h3>No se pudo conectar al servidor</h3>
+    <p>El servidor en Render no respondió. Puede estar iniciando (los servidores gratuitos de Render tardan ~30 segundos en despertar después de inactividad).</p>
+    <code id="errorUrl"></code>
+    <button class="retry-btn" onclick="cargarLibros()">Reintentar conexión</button>
+  </div>
+</div>
+
+<!-- RESULTADOS BÚSQUEDA -->
+<div class="results-section" id="resultsSection">
+  <div class="results-header">
+    <div class="results-title">Resultados para <strong id="queryLabel"></strong></div>
+    <button class="clear-btn" onclick="clearSearch()">Limpiar búsqueda</button>
+  </div>
+  <div class="books-grid" id="resultsGrid"></div>
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">📚</div>
+    <h3>Sin resultados</h3>
+    <p>No encontramos libros que coincidan con tu búsqueda.<br>Intenta con otro título, autor o materia.</p>
+  </div>
+</div>
+
+<!-- CATÁLOGO -->
+<div class="catalog-section" id="catalogSection">
+  <div class="section-label"><h2>Catálogo completo</h2></div>
+  <div class="books-grid" id="catalogGrid">
+    <!-- Skeletons mientras carga -->
+    ${Array(6).fill(`
+      <div class="sk-card">
+        <div class="skeleton sk-line wide"></div>
+        <div class="skeleton sk-line mid"></div>
+        <div class="skeleton sk-line short" style="margin-top:16px"></div>
+        <div class="skeleton sk-btn"></div>
+      </div>`).join('')}
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modalForm">
+      <div class="modal-tag">Solicitar préstamo</div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-author" id="mAuthor"></div>
+      <div class="modal-divider"></div>
+      <div class="modal-row">
+        <span class="modal-key">Disponibilidad</span>
+        <span class="modal-val" id="mDisp"></span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-key">Código QR</span>
+        <span class="modal-val" id="mQR" style="font-family:monospace;color:#6b7a99"></span>
+      </div>
+      <div class="modal-divider"></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+        Completa tus datos para registrar el préstamo. Si el libro no está disponible, quedarás en la cola FIFO.
+      </p>
+      <div class="modal-form">
+        <input type="text" id="mNombre" placeholder="Nombre completo">
+        <input type="text" id="mCedula" placeholder="Cédula de identidad">
+        <input type="email" id="mCorreo" placeholder="Correo institucional (@ucv.ve)">
+        <button class="modal-submit" id="mSubmitBtn" onclick="confirmarPrestamo()">
+          Confirmar solicitud
+        </button>
+      </div>
+    </div>
+    <div class="modal-success" id="modalSuccess">
+      <div class="success-check">✓</div>
+      <h3 id="successTitle"></h3>
+      <p id="successMsg"></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Bolsa del Libro · <span>Escuela de Ingeniería Eléctrica</span> · Universidad Central de Venezuela<br>
+  Sistema desarrollado como proyecto de <span>Sistemas de Telecomunicaciones II</span> · 2026</p>
+</footer>
+
+<script>
+const API = 'https://bolsa-del-libro.onrender.com';
+const COLORES = ['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2'];
+let LIBROS = [];
+let modalLibro = null;
+
+// ── ESTADO DEL SERVIDOR ──────────────────────────────────────────────
+function setStatus(estado) {
+  const dot = document.getElementById('statusDot');
+  if (estado === 'ok') {
+    dot.className = 'status-dot status-ok';
+    dot.textContent = 'Servidor activo';
+  } else if (estado === 'error') {
+    dot.className = 'status-dot status-err';
+    dot.textContent = 'Sin conexión';
+  } else {
+    dot.className = 'status-dot status-loading';
+    dot.textContent = 'Conectando...';
+  }
+}
+
+// ── CARGAR LIBROS DESDE LA API ───────────────────────────────────────
+async function cargarLibros() {
+  setStatus('loading');
+  document.getElementById('apiError').classList.remove('visible');
+  document.getElementById('catalogGrid').innerHTML = Array(6).fill(`
+    <div class="sk-card">
+      <div class="skeleton sk-line wide"></div>
+      <div class="skeleton sk-line mid"></div>
+      <div class="skeleton sk-line short" style="margin-top:16px"></div>
+      <div class="skeleton sk-btn"></div>
+    </div>`).join('');
+
+  try {
+    const res = await fetch(`${API}/libros/`, {
+      signal: AbortSignal.timeout(15000)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    LIBROS = await res.json();
+    setStatus('ok');
+    renderCatalog(LIBROS);
+  } catch (err) {
+    setStatus('error');
+    document.getElementById('catalogGrid').innerHTML = '';
+    document.getElementById('apiError').classList.add('visible');
+    document.getElementById('errorUrl').textContent = `GET ${API}/libros/  →  ${err.message}`;
+  }
+}
+
+// ── BUSCAR POR QR EN LA API ──────────────────────────────────────────
+async function consultarQR(codigo) {
+  try {
+    const res = await fetch(`${API}/libros/qr/${codigo}`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}
+
+// ── REGISTRAR USUARIO EN LA API ──────────────────────────────────────
+async function registrarOBuscarUsuario(nombre, cedula, correo) {
+  // Intentar crear usuario (si ya existe, la API devuelve error 400)
+  try {
+    const res = await fetch(`${API}/usuarios/`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({nombre, cedula, correo})
+    });
+    const data = await res.json();
+    if (res.ok) return data.id;
+
+    // Si ya existe, buscar en la lista
+    const todos = await fetch(`${API}/usuarios/`);
+    const lista = await todos.json();
+    const encontrado = lista.find(u => u.cedula === cedula);
+    return encontrado ? encontrado.id : null;
+  } catch { return null; }
+}
+
+// ── SOLICITAR PRÉSTAMO EN LA API ─────────────────────────────────────
+async function solicitarPrestamoAPI(libro_id, usuario_id) {
+  const res = await fetch(`${API}/prestamos/solicitar`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({libro_id, usuario_id})
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+// ── RENDER DE TARJETAS ───────────────────────────────────────────────
+function getBadge(disp) {
+  if (disp === 0) return ['badge-no', 'No disponible'];
+  if (disp === 1) return ['badge-low', 'Último ejemplar'];
+  return ['badge-ok', `${disp} disponibles`];
+}
+
+function cardHTML(l, idx) {
+  const [bClass, bText] = getBadge(l.cantidad_disponible);
+  const color = COLORES[idx % COLORES.length];
+  let btnHTML = '';
+  if (l.cantidad_disponible === 0) {
+    btnHTML = `<button class="request-btn req-no" disabled>Sin disponibilidad</button>`;
+  } else if (l.cantidad_disponible === 1) {
+    btnHTML = `<button class="request-btn req-low" onclick="abrirModal(${l.id})">Solicitar · Último ejemplar</button>`;
+  } else {
+    btnHTML = `<button class="request-btn req-ok" onclick="abrirModal(${l.id})">Solicitar préstamo</button>`;
+  }
+  return `
+    <div class="book-card">
+      <div class="book-spine" style="background:${color}"></div>
+      <div class="book-body">
+        <div class="book-category">ISBN: ${l.isbn || 'N/A'}</div>
+        <div class="book-title">${l.titulo}</div>
+        <div class="book-author">${l.autor}</div>
+        <div class="book-footer">
+          <div class="avail-badge ${bClass}">${bText}</div>
+          <div class="qr-tag">${l.codigo_qr || ''}</div>
+        </div>
+        ${btnHTML}
+      </div>
+    </div>`;
+}
+
+function renderCatalog(lista) {
+  document.getElementById('catalogGrid').innerHTML =
+    lista.length > 0
+      ? lista.map((l, i) => cardHTML(l, i)).join('')
+      : '<p style="color:var(--muted);font-size:14px;padding:20px 0;">No hay libros en el catálogo.</p>';
+}
+
+// ── BÚSQUEDA LOCAL (filtra los datos ya cargados) ────────────────────
+function filtrar(q) {
+  q = q.trim().toLowerCase();
+  const rs = document.getElementById('resultsSection');
+  const cat = document.getElementById('catalogSection');
+  if (!q) { clearSearch(); return; }
+
+  const found = LIBROS.filter(l =>
+    l.titulo.toLowerCase().includes(q) ||
+    l.autor.toLowerCase().includes(q) ||
+    (l.isbn && l.isbn.includes(q)) ||
+    (l.codigo_qr && l.codigo_qr.toLowerCase().includes(q))
+  );
+
+  document.getElementById('queryLabel').textContent = `"${q}"`;
+  rs.classList.add('visible');
+  cat.style.display = 'none';
+
+  const grid = document.getElementById('resultsGrid');
+  const empty = document.getElementById('emptyState');
+  if (found.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.add('visible');
+  } else {
+    empty.classList.remove('visible');
+    grid.innerHTML = found.map((l, i) => cardHTML(l, i)).join('');
+  }
+}
+
+function setSearch(val) {
+  document.getElementById('mainSearch').value = val;
+  filtrar(val);
+  window.scrollTo({top: document.querySelector('.hero').offsetHeight, behavior:'smooth'});
+}
+
+function clearSearch() {
+  document.getElementById('mainSearch').value = '';
+  document.getElementById('resultsSection').classList.remove('visible');
+  document.getElementById('catalogSection').style.display = 'block';
+  document.getElementById('emptyState').classList.remove('visible');
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────
+function abrirModal(id) {
+  modalLibro = LIBROS.find(l => l.id === id);
+  document.getElementById('mTitle').textContent = modalLibro.titulo;
+  document.getElementById('mAuthor').textContent = modalLibro.autor;
+  document.getElementById('mQR').textContent = modalLibro.codigo_qr || 'N/A';
+  const [, bText] = getBadge(modalLibro.cantidad_disponible);
+  document.getElementById('mDisp').textContent = bText;
+  document.getElementById('modalForm').style.display = 'block';
+  document.getElementById('modalSuccess').classList.remove('show');
+  document.getElementById('mSubmitBtn').disabled = false;
+  document.getElementById('mSubmitBtn').textContent = 'Confirmar solicitud';
+  ['mNombre','mCedula','mCorreo'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('open');
+}
+
+async function confirmarPrestamo() {
+  const nombre = document.getElementById('mNombre').value.trim();
+  const cedula = document.getElementById('mCedula').value.trim();
+  const correo = document.getElementById('mCorreo').value.trim();
+
+  if (!nombre || !cedula || !correo) {
+    alert('Por favor completa todos los campos.');
+    return;
+  }
+
+  const btn = document.getElementById('mSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Procesando...';
+
+  try {
+    // 1. Registrar o buscar usuario en la API
+    const usuario_id = await registrarOBuscarUsuario(nombre, cedula, correo);
+    if (!usuario_id) throw new Error('No se pudo registrar el usuario');
+
+    // 2. Solicitar préstamo en la API
+    const resultado = await solicitarPrestamoAPI(modalLibro.id, usuario_id);
+
+    // 3. Mostrar resultado
+    document.getElementById('modalForm').style.display = 'none';
+    const suc = document.getElementById('modalSuccess');
+    suc.classList.add('show');
+
+    if (resultado.estado === 'activo') {
+      document.getElementById('successTitle').textContent = '¡Préstamo registrado!';
+      document.getElementById('successMsg').textContent =
+        `Hola ${nombre}, tu préstamo de "${modalLibro.titulo}" fue registrado exitosamente (ID #${resultado.prestamo_id}). Preséntate con tu cédula en la biblioteca para retirarlo.`;
+    } else {
+      document.getElementById('successTitle').textContent = 'Agregado a la cola';
+      document.getElementById('successMsg').textContent =
+        `Hola ${nombre}, el libro no está disponible ahora. Quedaste en la posición #${resultado.posicion_en_cola} de la cola FIFO. Serás atendido automáticamente cuando se devuelva un ejemplar.`;
+    }
+
+    // 4. Recargar libros para reflejar nueva disponibilidad
+    await cargarLibros();
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Confirmar solicitud';
+    alert(`Error al procesar la solicitud: ${err.message}\n\nVerifica que el servidor esté activo.`);
+  }
+}
+
+// ── INICIO ───────────────────────────────────────────────────────────
+cargarLibros();
+</script>
+</body>
+</html>

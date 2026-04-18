@@ -17,7 +17,7 @@ def generar_qr_libros():
         id_libro, titulo, autor, codigo_qr = libro
         
         # Información que tendrá el QR
-        url = f"http://127.0.0.1:8000/libros/qr/{codigo_qr}"
+        url = f"https://bolsa-del-libro.onrender.com/libros/qr/{codigo_qr}"
         
         # Generar el QR
         qr = qrcode.QRCode(
