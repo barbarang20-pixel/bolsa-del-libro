@@ -74,4 +74,25 @@ def buscar_por_titulo(titulo: str):
             "cantidad_disponible": l[3]
         }
         for l in libros
-    ]
+    ]# Endpoint temporal para reset de datos
+@router.post("/reset-datos")
+def reset_datos():
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM cola_solicitudes")
+        cursor.execute("DELETE FROM prestamos")
+        cursor.execute("UPDATE libros SET cantidad_disponible = cantidad_total")
+        cursor.execute("UPDATE libros SET titulo='Circuitos Eléctricos', autor='Nilsson & Riedel' WHERE codigo_qr='QR-001'")
+        cursor.execute("UPDATE libros SET titulo='Señales y Sistemas', autor='Oppenheim & Willsky' WHERE codigo_qr='QR-002'")
+        cursor.execute("UPDATE libros SET titulo='Comunicaciones Analógicas', autor='Haykin' WHERE codigo_qr='QR-003'")
+        cursor.execute("UPDATE libros SET titulo='Electrónica', autor='Boylestad & Nashelsky' WHERE codigo_qr='QR-004'")
+        cursor.execute("UPDATE libros SET titulo='Matemáticas para Ingenieros', autor='Kreyszig' WHERE codigo_qr='QR-005'")
+        cursor.execute("UPDATE libros SET titulo='Teoría Electromagnética', autor='Hayt & Buck' WHERE codigo_qr='QR-006'")
+        conn.commit()
+        conn.close()
+        return {"mensaje": "Base de datos reseteada correctamente"}
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return {"error": str(e)}
