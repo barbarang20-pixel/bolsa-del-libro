@@ -80,8 +80,7 @@ def reset_datos():
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM cola_solicitudes")
-        cursor.execute("DELETE FROM prestamos")
+        cursor.execute("TRUNCATE TABLE cola_solicitudes, prestamos RESTART IDENTITY CASCADE")
         cursor.execute("UPDATE libros SET cantidad_disponible = cantidad_total")
         cursor.execute("UPDATE libros SET titulo='Circuitos Eléctricos', autor='Nilsson & Riedel' WHERE codigo_qr='QR-001'")
         cursor.execute("UPDATE libros SET titulo='Señales y Sistemas', autor='Oppenheim & Willsky' WHERE codigo_qr='QR-002'")
