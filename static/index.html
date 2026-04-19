@@ -359,6 +359,11 @@ function setStatus(estado) {
 async function cargarLibros() {
   setStatus('loading');
   document.getElementById('apiError').classList.remove('visible');
+
+  // Despertar el servidor antes de pedir datos
+  try {
+    await fetch(`${API}/`, { signal: AbortSignal.timeout(60000) });
+  } catch(_) {}
   document.getElementById('catalogGrid').innerHTML = Array(6).fill(`
     <div class="sk-card">
       <div class="skeleton sk-line wide"></div>
