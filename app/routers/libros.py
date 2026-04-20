@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.database import get_connection
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/libros", tags=["Libros"])
 
@@ -93,8 +94,8 @@ def reset_datos():
     except Exception as e:
         conn.rollback()
         conn.close()
-        return {"error": str(e)} from pydantic import BaseModel
-
+        return {"error": str(e)} 
+    
 class LibroCreate(BaseModel):
     titulo: str
     autor: str
