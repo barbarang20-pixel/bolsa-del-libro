@@ -81,16 +81,42 @@ def reset_datos():
     cursor = conn.cursor()
     try:
         cursor.execute("TRUNCATE TABLE cola_solicitudes, prestamos RESTART IDENTITY CASCADE")
-        cursor.execute("UPDATE libros SET cantidad_disponible = cantidad_total")
-        cursor.execute("UPDATE libros SET titulo='Circuitos Eléctricos', autor='Nilsson & Riedel' WHERE codigo_qr='QR-001'")
-        cursor.execute("UPDATE libros SET titulo='Señales y Sistemas', autor='Oppenheim & Willsky' WHERE codigo_qr='QR-002'")
-        cursor.execute("UPDATE libros SET titulo='Comunicaciones Analógicas', autor='Haykin' WHERE codigo_qr='QR-003'")
-        cursor.execute("UPDATE libros SET titulo='Electrónica', autor='Boylestad & Nashelsky' WHERE codigo_qr='QR-004'")
-        cursor.execute("UPDATE libros SET titulo='Matemáticas para Ingenieros', autor='Kreyszig' WHERE codigo_qr='QR-005'")
-        cursor.execute("UPDATE libros SET titulo='Teoría Electromagnética', autor='Hayt & Buck' WHERE codigo_qr='QR-006'")
+        cursor.execute("UPDATE libros SET titulo='Circuitos Eléctricos', autor='Nilsson & Riedel', cantidad_total=3, cantidad_disponible=3 WHERE codigo_qr='QR-001'")
+        cursor.execute("UPDATE libros SET titulo='Señales y Sistemas', autor='Oppenheim & Willsky', cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-002'")
+        cursor.execute("UPDATE libros SET titulo='Comunicaciones Analógicas', autor='Haykin', cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-003'")
+        cursor.execute("UPDATE libros SET titulo='Electrónica', autor='Boylestad & Nashelsky', cantidad_total=4, cantidad_disponible=4 WHERE codigo_qr='QR-004'")
+        cursor.execute("UPDATE libros SET titulo='Matemáticas para Ingenieros', autor='Kreyszig', cantidad_total=3, cantidad_disponible=3 WHERE codigo_qr='QR-005'")
+        cursor.execute("UPDATE libros SET titulo='Teoría Electromagnética', autor='Hayt & Buck', cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-006'")
         conn.commit()
         conn.close()
         return {"mensaje": "Base de datos reseteada correctamente"}
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return {"error": str(e)} from pydantic import BaseModel
+
+class LibroCreate(BaseModel):
+    titulo: str
+    autor: str
+    isbn: str
+    cantidad_total: int
+    codigo_qr: str
+
+@router.post("/")
+def crear_libro(libro: LibroCreate):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO libros (titulo, autor, isbn, cantidad_total, cantidad_disponible, codigo_qr)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            RETURNING id
+        """, (libro.titulo, libro.autor, libro.isbn,
+              libro.cantidad_total, libro.cantidad_total, libro.codigo_qr))
+        nuevo_id = cursor.fetchone()[0]
+        conn.commit()
+        conn.close()
+        return {"mensaje": "Libro agregado exitosamente", "id": nuevo_id}
     except Exception as e:
         conn.rollback()
         conn.close()
