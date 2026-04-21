@@ -456,7 +456,7 @@ function cardHTML(l, idx) {
   const color = COLORES[idx % COLORES.length];
   let btnHTML = '';
   if (l.cantidad_disponible === 0) {
-    btnHTML = `<button class="request-btn req-no" disabled>Sin disponibilidad</button>`;
+    btnHTML = `<button class="request-btn req-no" onclick="abrirModal(${id})">Unirse a la cola FIFO</button>`;
   } else if (l.cantidad_disponible === 1) {
     btnHTML = `<button class="request-btn req-low" onclick="abrirModal(${l.id})">Solicitar · Último ejemplar</button>`;
   } else {
