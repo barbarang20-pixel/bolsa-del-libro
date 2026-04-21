@@ -133,6 +133,8 @@ header{
 .req-low{background:#fffbeb;color:var(--amber);border:1px solid #fcd34d;}
 .req-low:hover{background:#fef3c7;}
 .req-no{background:#f8f9fc;color:var(--muted);cursor:not-allowed;border:1px solid var(--border);}
+.req-queue{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+.req-queue:hover{background:#ffc107;color:#fff;}
 
 .empty-state{text-align:center;padding:48px 20px;display:none;}
 .empty-state.visible{display:block;}
@@ -429,10 +431,14 @@ async function solicitarPrestamoAPI(libro_id, usuario_id) {
 }
 
 // ── RENDER DE TARJETAS ───────────────────────────────────────────────
-function getBadge(disp) {
-  if (disp === 0) return ['badge-no', 'No disponible'];
-  if (disp === 1) return ['badge-low', 'Último ejemplar'];
-  return ['badge-ok', `${disp} disponibles`];
+function getReqBtn(disp, id) {
+  if (disp === 0) {
+    return `<button class="request-btn req-queue" onclick="abrirModal(${id})">Unirse a la cola FIFO</button>`;
+  } else if (disp === 1) {
+    return `<button class="request-btn req-low" onclick="abrirModal(${id})">Solicitar · Último ejemplar</button>`;
+  } else {
+    return `<button class="request-btn req-ok" onclick="abrirModal(${id})">Solicitar préstamo</button>`;
+  }
 }
 
 function cardHTML(l, idx) {
