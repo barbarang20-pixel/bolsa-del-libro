@@ -88,6 +88,9 @@ def reset_datos():
         cursor.execute("UPDATE libros SET titulo='Electrónica', autor='Boylestad & Nashelsky', cantidad_total=4, cantidad_disponible=4 WHERE codigo_qr='QR-004'")
         cursor.execute("UPDATE libros SET titulo='Matemáticas para Ingenieros', autor='Kreyszig', cantidad_total=3, cantidad_disponible=3 WHERE codigo_qr='QR-005'")
         cursor.execute("UPDATE libros SET titulo='Teoría Electromagnética', autor='Hayt & Buck', cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-006'")
+        cursor.execute("UPDATE libros SET cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-007'")
+        cursor.execute("UPDATE libros SET cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-008'")
+        cursor.execute("UPDATE libros SET cantidad_total=2, cantidad_disponible=2 WHERE codigo_qr='QR-002'")
         conn.commit()
         conn.close()
         return {"mensaje": "Base de datos reseteada correctamente"}
