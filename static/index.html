@@ -435,7 +435,7 @@ async function solicitarPrestamoAPI(libro_id, usuario_id) {
 // ── RENDER DE TARJETAS ───────────────────────────────────────────────
 function getReqBtn(disp, id) {
   if (disp === 0) {
-    return `<button class="request-btn req-queue" onclick="abrirModal(${id})">Unirse a la cola FIFO</button>`;
+    return `<button class="request-btn req-queue" onclick="abrirModal(${l.id})">Unirse a la cola FIFO</button>`;
   } else if (disp === 1) {
     return `<button class="request-btn req-low" onclick="abrirModal(${id})">Solicitar · Último ejemplar</button>`;
   } else {
@@ -456,7 +456,7 @@ function cardHTML(l, idx) {
   const color = COLORES[idx % COLORES.length];
   let btnHTML = '';
   if (l.cantidad_disponible === 0) {
-    btnHTML = `<button class="request-btn req-queue" onclick="abrirModal(${id})">Unirse a la cola FIFO</button>`;
+    btnHTML = `<button class="request-btn req-queue" onclick="abrirModal(${l.id})">Unirse a la cola FIFO</button>`;
   } else if (l.cantidad_disponible === 1) {
     btnHTML = `<button class="request-btn req-low" onclick="abrirModal(${l.id})">Solicitar · Último ejemplar</button>`;
   } else {
