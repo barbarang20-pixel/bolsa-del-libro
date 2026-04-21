@@ -15,7 +15,9 @@
 }
 html{scroll-behavior:smooth;}
 body{font-family:var(--ff);background:#f8f9fc;color:var(--text);min-height:100vh;}
-
+.badge-ok      { background: var(--green);  color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; }
+.badge-bajo    { background: var(--amber);  color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; }
+.badge-agotado { background: var(--red);    color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; }
 header{
   background:var(--navy);padding:0 2rem;
   display:flex;align-items:center;justify-content:space-between;height:62px;
@@ -440,7 +442,15 @@ function getReqBtn(disp, id) {
     return `<button class="request-btn req-ok" onclick="abrirModal(${id})">Solicitar préstamo</button>`;
   }
 }
-
+function getBadge(cantidad) {
+    if (cantidad === 0) {
+        return ['badge-agotado', 'Agotado'];
+    } else if (cantidad === 1) {
+        return ['badge-bajo', '1 disponible'];
+    } else {
+        return ['badge-ok', `${cantidad} disponibles`];
+    }
+}
 function cardHTML(l, idx) {
   const [bClass, bText] = getBadge(l.cantidad_disponible);
   const color = COLORES[idx % COLORES.length];
